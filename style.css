@@ -1,0 +1,27 @@
+body {
+  background-color: lightgrey;
+}
+
+h1 {
+  font-family: Monospace, Lobster;
+}
+
+#maindiv {
+  width: 370px;
+  height: 150px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin: -105px 0 0 -135px;
+}
+
+input[type=text] {
+    width: 60%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+}
+
+footer {
+  text-align: center;
+}

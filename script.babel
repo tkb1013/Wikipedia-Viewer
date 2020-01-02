@@ -1,0 +1,124 @@
+class Wikipedia extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      error: null,
+      isLoaded: false,
+      entries: [],
+      items: [],
+      text: ""
+    };
+  }
+
+  handleChange = e => {
+    this.setState({ text: e.target.value });
+  };
+
+  handleSubmit = e => {
+    e.preventDefault();
+    if (!this.state.text.length) {
+      return;
+    }
+    /*
+    const newItem = {
+      text: this.state.text,
+      id: Date.now()
+    };
+    this.setState(state => ({
+      items: state.items.concat(newItem),
+      text: ""
+    }));
+    */
+    
+    let api = "https://en.wikipedia.org/w/api.php?format=json&action=query&generator=search&gsrnamespace=0&gsrlimit=10&prop=pageimages|extracts&pilimit=max&exintro&explaintext&exsentences=1&exlimit=max&gsrsearch=";
+
+    
+    fetch(api + this.state.text)
+      .then(res => res.json())
+      .then(
+        result => {
+          this.setState({
+            isLoaded: true,
+            entries: result.query.pages
+          });
+        },
+        // Note: it's important to handle errors here
+        // instead of a catch() block so that we don't swallow
+        // exceptions from actual bugs in components.
+        error => {
+          this.setState({
+            isLoaded: true,
+            error
+          });
+        }
+      );
+  };
+
+  render() {
+    return (
+      <div class="input-append">
+        <form onSubmit={this.handleSubmit}>
+          <input
+            class="span2"
+            id="searchbox"
+            type="text"
+            placeholder="Search Wikipedia..."
+            onChange={this.handleChange}
+            value={this.state.text}
+          />
+          <button class="btn">
+            <span class="glyphicon glyphicon-search" />
+          </button>
+          <a
+            href="https://en.wikipedia.org/wiki/Special:Random"
+            target="_blank"
+          >
+            <button class="btn" type="button" id="random">
+              Random
+            </button>
+          </a>
+        </form>
+        
+      </div>
+    );
+  }
+}
+
+/*class TodoList extends React.Component {
+  render() {
+    return (
+      <ul>
+        {this.props.items.map(item => <li key={item.id}>{item.text}</li>)}
+      </ul>
+    );
+  }
+}*/
+
+class Entries extends React.Component {
+  render(){
+    const { error, isLoaded} = this.state;
+    const wikiLink = "http://en.wikipedia.org/?curid=";
+    
+    if (error) {
+      return <div>Error: {error.message}</div>;
+    } else if (!isLoaded) {
+      return <div>Loading...</div>;
+    } else {
+      return (
+        <div>
+          {this.props.entries.map(entry = (
+            <a
+                target="_blank"
+                href={wikiLink + entry.pageid}
+              >
+            <div>
+            <h5>{entry.title}</h5>
+          <p>{entry.extract}</p></div></a>))}
+        </div>
+      );
+    }
+    
+  }
+}
+
+ReactDOM.render(<Wikipedia />, document.getElementById("root"));
